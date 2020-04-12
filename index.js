@@ -1,4 +1,4 @@
-ds/dv/'use strict';
+'use strict';
 const loadAndProcessData = () =>
     Promise
         .all([
