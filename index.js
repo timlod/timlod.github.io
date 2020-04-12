@@ -2,10 +2,10 @@
 const loadAndProcessData = () =>
     Promise
         .all([
-            d3.json('data/countries-50m.json'),
-            d3.json('data/data.json'),
-            d3.json('data/hashtags.json'),
-            d3.json('data/timeline2.json')
+            d3.json('https://raw.githubusercontent.com/timlod/timlod.github.io/master/data/countries-50m.json'),
+            d3.json('https://raw.githubusercontent.com/timlod/timlod.github.io/master/data/data.json'),
+            d3.json('https://raw.githubusercontent.com/timlod/timlod.github.io/master/data/hashtags.json'),
+            d3.json('https://raw.githubusercontent.com/timlod/timlod.github.io/master/data/timeline2.json')
         ])
         .then(([topoJSONdata, tweets, hashtags, timeline]) => {
 
