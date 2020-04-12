@@ -2,10 +2,10 @@
 const loadAndProcessData = () =>
     Promise
         .all([
-            d3.json('https://timlod.github.io/data/test.json'),
-            d3.json('https://timlod.github.io/data/data.json'),
-            d3.json('https://timlod.github.io/data/hashtags.json'),
-            d3.json('https://timlod.github.io/data/timeline2.json')
+            d3.json('https://rawcdn.githack.com/timlod/timlod.github.io/3566e9ea38d34ab4d81dee8faa4acb262dac3667/data/countries-50m.json'),
+            d3.json('https://rawcdn.githack.com/timlod/timlod.github.io/3566e9ea38d34ab4d81dee8faa4acb262dac3667/data/data.json'),
+            d3.json('https://rawcdn.githack.com/timlod/timlod.github.io/3566e9ea38d34ab4d81dee8faa4acb262dac3667/data/hashtags.json'),
+            d3.json('https://rawcdn.githack.com/timlod/timlod.github.io/3566e9ea38d34ab4d81dee8faa4acb262dac3667/data/timeline2.json')
             // d3.json('data/countries-50m.json'),
             // d3.json('data/data.json'),
             // d3.json('data/hashtags.json'),
