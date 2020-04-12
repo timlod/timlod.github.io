@@ -1,4 +1,4 @@
-'use strict';
+ds/dv/'use strict';
 const loadAndProcessData = () =>
     Promise
         .all([
@@ -90,7 +90,7 @@ var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oc
     currentFrame = 0,
     interval,
     frameLength = 1000,
-    isPlaying = false;
+    isPlaying = true;
 
 var dateScale, sliderScale, slider;
 // should be equal to x_offset of linechart
@@ -131,7 +131,7 @@ loadAndProcessData().then(([features, tw]) => {
     orderedColumns = twitter.ts
 
     // Flatten values array, sort by rv
-    sizeScale = d3.scaleLinear()
+    sizeScale = d3.scaleSqrt()
         .domain([0, d3.quantile(twitter.data.flat().map(d => d3.max(d)).sort(d3.ascending), 0.9995)])
         .range([0, 15]);
 
@@ -169,13 +169,9 @@ loadAndProcessData().then(([features, tw]) => {
         .selectAll("circle")
         .data((d, i) => twitter.data[twitter.ts.length - 1][i])
         .join("circle")
-        // .attr("transform", function (d) {
-        //     return "translate(" + d.projected + ")"
-        // })
-        // possibly add stance class for colouring through css
+        // stance class for colouring through css
         .attr("class", (d, i) => "c" + i)
-        // possibly move to other area
-        //.attr("r", d => sizeScale(d));
+        // init with zero radius
         .attr("r", d => 0);
 
 
@@ -209,30 +205,15 @@ loadAndProcessData().then(([features, tw]) => {
             }
             isPlaying = !isPlaying;
         });
-
+    if (isPlaying) {
+        d3.select("#play").classed("pause", true).attr("title", "Pause animation");
+    }
     drawMonth(currentFrame); // initial map
 
     changeChart();
-    //window.onresize = resize;
-    //resize();
+    animate()
 });
 
-function resize() {
-    d3.select("div");
-    var w = d3.select("#container").node().offsetWidth,
-        h = window.innerHeight - 80;
-    var scale = Math.max(1, Math.min(w / width, h / height));
-    svg
-        .attr("width", width * scale)
-        .attr("height", height * scale);
-    map.attr("transform", "scale(" + scale + "," + scale + ")");
-
-    d3.select("#map-container").style("width", width * scale + "px");
-
-    dateScale.range([0, 500 + w - width]);
-
-    createSlider();
-}
 
 function animate() {
     interval = setInterval(function () {
@@ -247,9 +228,10 @@ function animate() {
         drawMonth(currentFrame, true);
 
         if (currentFrame == orderedColumns.length - 1) {
-            isPlaying = false;
-            d3.select("#play").classed("pause", false).attr("title", "Play animation");
-            clearInterval(interval);
+            //isPlaying = false;
+            //d3.select("#play").classed("pause", false).attr("title", "Play animation");
+            //clearInterval(interval);
+	    currentFrame = 0;
         }
 
     }, frameLength);
@@ -270,16 +252,28 @@ function drawMonth(m, tween) {
             .ease(d3.easeLinear)
             .duration(frameLength)
             .attr("r", function (d, i) {
-                if (i === 0) j++;
+                if (i === 0) {
+                    j++;
+                    return sizeScale(d);
+                } else {
+                    // keep sqrt scale but be internally consistent
+                    var other = twitter.data[m][j][0]
+                    return other ? sizeScale(other) * d / other : 0;
+                }
                 //return sizeScale(radiusValue(twitter.data[m][j]) - d)
-                return sizeScale(d);
+
             });
     } else {
         circles.attr("r", function (d, i) {
             //possibly add rv
-            if (i === 0) j++;
+            if (i === 0) {
+                j++;
+                return sizeScale(d);
+            } else {
+                var other = twitter.data[m][j][0]
+                return other ? sizeScale(other) * d / other : 0;
+            }
             //return sizeScale(radiusValue(twitter.data[m][j]) - d)
-            return sizeScale(d)
         });
     }
 }
@@ -416,15 +410,10 @@ var changeChart = function () {
         const w = r[1] - r[0];
         // moves x axis around (vertically
         svg.attr('transform', `translate(0,${height - y_offset})`).call(
-             d3
-                 .axisBottom(x)
-                 .tickFormat(d3.timeFormat("")));
-        //         // specifies number of ticks
-        //         .ticks(Math.round(w / 60))
-        //         .tickSizeOuter(1)
-        //         // makes vertical ticks
-        //         .tickSizeInner((5) * -1)
-        // );
+            d3
+                .axisBottom(x)
+                .tickFormat(d3.timeFormat("")));
+
     };
     var yAxis = (svg, y) =>
         // moves y axis further around
@@ -461,20 +450,12 @@ var changeChart = function () {
     const t = chart.transition().duration(frameLength);
 // initalize on first call
     if (!chart.g) {
+	// change comments to fix chart
         // chart.g = d3
         //     .selectAll('.map')
-            chart.g = svg.append("g")
+        chart.g = svg.append("g")
             .attr('class', 'chart');
 
-        // rectangle behind chart - not necessary, and blocks probe
-        // chart.rect = chart.g
-        //     .append('rect')
-        //     .attr('class', 'rect')
-        //     .attr('x', chartX)
-        //     .attr('y', height - 400)
-        //     .attr('height', 400)
-        //     .attr('width', chartWidth - chartX - 500)
-        //     .style('fill', 'rgba(0,0,0,0)');
         chart.lines = chart.g.append('g').classed('lines', true);
         chart.xAxis = chart.g
             .append("g")
@@ -507,44 +488,27 @@ var changeChart = function () {
         .attr('x2', chartX + 3)
         .attr('y1', height - tooltip_height)
         .attr('y2', height - y_offset);
-    // tooltip
-    //     .append('line')
-    //     .attr('stroke', '#333')
-    //     .attr('stroke-width', 0.1)
-    //     .attr('x1', chartX)
-    //     .attr('x2', chartX)
-    //     .attr('y1', height - tooltip_height)
-    //     .attr('y2', height - y_offset);
-    //
-    // tooltip
-    //     .append('line')
-    //     .attr('stroke', '#333')
-    //     .attr('stroke-width', 0.1)
-    //     .attr('x1', chartX + 8)
-    //     .attr('x2', chartX + 8)
-    //     .attr('y1', height - tooltip_height)
-    //     .attr('y2', height - y_offset);
 
     var totalLine = d3
         .line()
         .defined(d => !isNaN(d.value[0]))
         .x(d => x(d.date))
         .y(d => yScale(d.value[0]))
-        .curve(d3.curveBasis);
+        //.curve(d3.curveBasis);
 
     var lowLine = d3
         .line()
         .defined(d => !isNaN(d.value[1]))
         .x(d => x(d.date))
         .y(d => yScale(d.value[1]))
-        .curve(d3.curveBasis);
+        //.curve(d3.curveBasis);
 
     chart.lines.selectAll('path').remove();
     var totalColor = "#3d9bd2"
     chart.lines
         .append("g")
-        .attr("fill", "none")
-        .attr("stroke-width", 1.5)
+        .attr("fill", "#ffffff")
+        .attr("stroke-width", 2)
         .attr("stroke-linejoin", "round")
         .attr("stroke-linecap", "round")
         .selectAll("path")
@@ -556,8 +520,8 @@ var changeChart = function () {
     var lowColor = "#bb301f"
     chart.lines
         .append("g")
-        .attr("fill", "none")
-        .attr("stroke-width", 1.5)
+        .attr("fill", "#fff")
+        .attr("stroke-width", 2)
         .attr("stroke-linejoin", "round")
         .attr("stroke-linecap", "round")
         .selectAll("path")
@@ -565,42 +529,6 @@ var changeChart = function () {
         .join("path")
         .attr("stroke", lowColor)
         .attr("d", d => lowLine(d.values));
-
-// style axis and tick lines
-    //makes horizontal lines opaque
-    chart.yAxis
-        .selectAll('.tick')
-        .selectAll('line')
-        .attr('stroke', '#323232');
-
-    chart.yAxis
-        .selectAll('.tick')
-        .selectAll('text')
-        .attr('font-size', `15px`)
-        .attr('fill', '#333');
-
-    // vertical lines opacity - i removed them
-    // chart.xAxis
-    //     .selectAll('.tick')
-    //     .selectAll('line')
-    //     .attr('stroke', '#323232');
-    // doesn't seem to do anything - it was because CSS overwrote it
-
-    // chart.xAxis
-    //     .selectAll('.tick')
-    //     .selectAll('text')
-    //     .attr("transform", "translate(0,3)")
-
-    //
-    // chart.xAxis
-    //     .selectAll('.domain')
-    //     .transition(t)
-    //     .style('opacity', 0);
-    //
-    // chart.yAxis
-    //     .selectAll('.domain')
-    //     .transition(t)
-    //     .style('opacity', 0);
 
 // legend
     chart.legend
@@ -649,16 +577,6 @@ var changeChart = function () {
         const w = r[1] - r[0];
         const numDates = twitter.ts.length;
         const tickLength = w / numDates;
-        //return r[0] + tickLength * (currentFrame + 1) - 4;
         guide.attr('transform', `translate(${(r[0] + tickLength * currentFrame) - chartX},0)`);
     }
-// // tooltip
-//     chart.rect.on("click", function () {
-//         const xpos = d3.mouse(this)[0] - chartX;
-//         const width = this.getBBox().width;
-//         const widths = width / twitter.ts.length;
-//         // mutable startIndex = Math.min(Math.round(xpos / widths), dates.length);
-//         // mutable stop = !mutable stop;
-//     });
 };
-
