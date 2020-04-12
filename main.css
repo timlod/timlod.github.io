@@ -1,0 +1,216 @@
+html, body {
+    margin: 0;
+    font-size: 14px;
+    font-family: Arial, Helvetica, sans-serif !important;
+}
+
+#container {
+    min-width: 960px;
+    margin: auto;
+    width: 1%;
+    border: 1px solid gray;
+    padding: 10px;
+    margin-bottom: 5em;
+}
+
+.land {
+    fill: #f7f7f7;
+    stroke: #ccc;
+}
+
+.state-boundary {
+    fill: none;
+    stroke: #bbb;
+}
+
+circle {
+    fill: none;
+    opacity: .9;
+/ / stroke: #c43030;
+}
+
+circle.c0 {
+    fill: #3d9bd2;
+/ / stroke: #fff;
+}
+
+circle.c1 {
+    fill: #bb301f;
+/ / stroke: #fff;
+}
+
+#map circle {
+    opacity: .65;
+}
+
+#map circle:hover {
+/ / stroke: black;
+    stroke-width: 2;
+}
+
+#map-container {
+    margin: auto;
+    width: 100%;
+}
+
+#date, #play, #slider-container {
+    display: inline-block;
+    vertical-align: middle;
+    margin-top: 0;
+}
+
+#date {
+    border-left: 5px solid #ccc;
+    padding: 3px 0 3px 10px;
+    margin-left: 0px;
+    color: #333;
+}
+
+#date p {
+    margin: 0;
+}
+
+#date p:first-child {
+    color: #999;
+    font-size: 11px;
+    line-height: 13px;
+}
+
+#date p#month span {
+    float: left;
+    width: 2.55em;
+}
+
+#play {
+    width: 53px;
+    height: 53px;
+    background-image: url(res/play.png);
+    border-radius: 5px;
+    margin-left: 10px;
+    cursor: pointer;
+}
+
+#play:hover {
+    background-position: 0 -53px;
+}
+
+#play.pause {
+    background-image: url(res/pause.png);
+}
+
+#slider-container {
+    position: relative;
+}
+
+#slider-div {
+    /*set this equal to sliderMargin in code*/
+    margin-left: 100px;
+    margin-top: -75px;
+}
+
+#slider-probe {
+    position: absolute;
+    top: -100px;
+    font-size: 12px;
+    width: 70px;
+    margin-left: -35px;
+    z-index: 0;
+    display: none;
+}
+
+#slider-probe p {
+    margin: 0;
+    width: 100%;
+    text-align: center;
+    height: 15px;
+}
+
+#slider-probe div {
+    height: 15px;
+    margin-left: 35px;
+    border-left: 1px solid #999;
+}
+
+#axis path {
+    fill: none;
+}
+
+#axis .tick line {
+    stroke: #999;
+}
+
+#axis .tick text {
+    font-size: 12px;
+}
+
+#probe {
+    position: absolute;
+    background-color: white;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 5px;
+    width: 20em;
+    display: none;
+    font-size: 12px;
+    -webkit-box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.25);
+    -moz-box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.25);
+    box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.25);
+}
+
+#probe strong {
+    font-size: 16px;
+}
+
+#probe span {
+    color: #999;
+    display: block;
+}
+
+#legend text {
+    font-size: 12px;
+}
+
+svg text {
+    fill: #666;
+}
+
+h1, h2, #intro {
+    text-align: center;
+    font-weight: normal;
+}
+
+h1 {
+    font-size: 30px;
+    margin: 20px;
+    color: #1a1a1a;
+}
+
+h2 {
+    font-size: 18px;
+    color: #999;
+    margin: 15px;
+}
+
+#intro {
+    width: 800px;
+    margin: auto;
+    font-size: 12px;
+    font-style: normal;
+    font-variant: normal;
+    font-weight: normal;
+    line-height: 18px;
+}
+
+#source {
+    color: #999;
+    font-size: 12px;
+    margin-left: 60px;
+    margin-top: 20px;
+}
+
+#loader {
+    width: 100%;
+    background: rgba(255, 255, 255, .75) url(res/ajax-loader.gif) no-repeat center center;
+    position: absolute;
+    z-index: 500;
+}

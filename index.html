@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Mapping Climate Change Stance</title>
+    <script src="lib/d3.min.js"></script>
+    <script src="lib/topojson.js"></script>
+    <script src="lib/slider.js"></script>
+    <link rel="stylesheet" href="d3.slider.css">
+    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="gfm.css">
+    <style>
+        .markdown-body {
+            box-sizing: border-box;
+            min-width: 200px;
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 45px;
+        }
+
+        @media (max-width: 767px) {
+            .markdown-body {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="markdown-body">
+    <h1 id="mapping-stance-of-climate-change-tweets">Mapping stance of climate change tweets</h1>
+    <p>The following is a visualisation of the stance of tweets about man-made climate change.</p>
+    <p><em>What is climate change stance?</em></p>
+    <p>We simplify stance by talking about two stances one can have regarding man-made, or human-caused, climate
+        change:</p>
+    <ol type="1">
+        <li>Favor: believes in man-made climate change</li>
+        <li>Against: does not believe in man-made climate change</li>
+    </ol>
+    <p>Of course there are more elaborate classifications, but for the sake of this visualisation, we the goal was to
+        visualise the question:</p>
+    <p><em>How many tweets on Twitter deny man-made climate change?</em></p>
+    <h2 id="data">Data</h2>
+    <p>We collected all the tweets containing the words 'climate' and 'change' from the <a
+            href="https://developer.twitter.com/en/docs/tutorials/consuming-streaming-data">Twitter Streaming API</a>
+        over the course of one month (March 5th until April 5th 2020). Tweets were collected live on a Raspberry Pi and
+        stored in a database. For each tweet, when there was no geolocation available (only ~1% of tweets are
+        geotagged), we inferred its location based on the text that each Twitter user put on their profile. This allowed
+        us to add location data to 50% of tweets.</p>
+    <h3 id="stance">Stance</h3>
+    <p>We trained a stance classification model on a dataset of approx. 50,000 tweets labelled with their stance on
+        man-made climate change (<a href="http://alt.qcri.org/semeval2016/task6/index.php?id=data-and-tools">link</a>).
+        Our RNN model achieves an accuracy of about 80% on our test dataset. This can, and should, certainly be
+        improved, and the resulting visualisation is NOT perfectly accurate with regards to the classified stance. View
+        it as correctly showing the rough trend for now.</p>
+    <h3 id="aggregation">Aggregation</h3>
+    <p>The map shows ~400,000 tweets, binned into the states of a country (some tweets were removed because there was
+        only information about the country of origin), aggregated per day.</p>
+    <h2 id="how-to-use">How to use</h2>
+    <p>The map shows the world, with bubbles representing the number of tweets about climate change on the given date
+        (blue: favor, red: against), at the given location. The line chart below shows the global number of tweets for
+        the given dates.</p>
+    <p>You can <strong><em>interact</em></strong> with the visualisation in the following ways:</p>
+    <ul>
+        <li>Press <strong><em>play</em></strong> to animate the number of tweets over the given timeline</li>
+        <li><strong><em>Slide</em></strong> the date around to show the data for a given date</li>
+        <li><strong><em>Hover</em></strong> over a bubble to reveal the exact numbers of tweets with stance favor
+            (humans contribute significantly to climate change) and against (humans don't contribute to climate change),
+            as well as the top 5 hashtags in that aggregation of tweets.
+        </li>
+        <li><strong><em>Zoom</em></strong> to reveal local changes - scroll into the map and drag it around!</li>
+    </ul>
+    <h2 id="drawbacks">Drawbacks</h2>
+    <p>This visualisation should be viewed as an interesting exploration of stance on climate change. The numbers are
+        not perfectly accurate, as the language models to correctly classify tweets are not flawless. The locations are
+        not necessarily accurate either, as most tweets were not geotagged - the location is solely based on the users
+        profile. The choice of representation (blue and red bubbles) is not ideal - for example, if there are almost as
+        many 'against' tweets as there are 'favor' tweets, the bubble will appear almost completely red. A better choice
+        are pie-charts, where area accurately represents percentage. We prototyped that visualisation, but making an
+        interactive visualisation with this many datapoints was proving too difficult at this point.</p>
+</div>
+<div id="container">
+    <div id="play"></div>
+    <div id="date">
+        <p>Animate daily stance on #climatechange</p>
+    </div>
+    <div id="map-container"></div>
+    <div id="chart-container"></div>
+    <div id="slider-container">
+        <div id="slider-div"></div>
+        <div id="slider-probe">
+            <p></p>
+            <div></div>
+        </div>
+    </div>
+    <script src="index.js"></script>
+</div>
+<div class="markdown-body">
+    <h2 id="how-it-was-made">How it was made</h2>
+    <p>This map was created using <a href="https://d3js.org">D3.js</a>. We updated the <a
+            href="https://github.com/MasterMaps/d3-slider">d3-slider</a> from <a
+            href="https://www.axismaps.com/blog/2014/10/geography-of-jobs-animated-mapping-with-d3/">Axis Maps</a> to D3
+        version 5, and adapted parts of the line-chart from <a
+                href="https://kartoteket.as/features/corona/timeline-map/">Kartoteket's</a> Coronavirus map.</p>
+
+</div>
+</body>
+</html>
