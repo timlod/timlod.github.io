@@ -41,25 +41,27 @@
         visualise the question:</p>
     <p><em>How many tweets on Twitter deny man-made climate change?</em></p>
     <h2 id="data">Data</h2>
-    <p>We collected all the tweets containing the words 'climate' and 'change' from the <a
-            href="https://developer.twitter.com/en/docs/tutorials/consuming-streaming-data">Twitter Streaming API</a>
+    <p>We collected all the tweets containing the words 'climate' and 'change' from the
+        <a href="https://developer.twitter.com/en/docs/tutorials/consuming-streaming-data">Twitter Streaming API</a>
         over the course of one month (March 5th until April 5th 2020). Tweets were collected live on a Raspberry Pi and
         stored in a database. For each tweet, when there was no geolocation available (only ~1% of tweets are
-        geotagged), we inferred its location based on the text that each Twitter user put on their profile. This allowed
-        us to add location data to 50% of tweets.</p>
+        geotagged), we inferred its location based on the text that each Twitter user put in their profile. The method,
+        which employs a custom search index based on public <a href="https://geonames.org">Geonames</a> datasets for
+        fast offline inference, allowed us to add location data to 50% of tweets.</p>
     <h3 id="stance">Stance</h3>
     <p>We trained a stance classification model on a dataset of approx. 50,000 tweets labelled with their stance on
         man-made climate change (<a href="http://alt.qcri.org/semeval2016/task6/index.php?id=data-and-tools">link</a>).
         Our RNN model (<a href="https://docs.fast.ai/text.models.html#AWD_LSTM">link</a>) achieves an accuracy of about
-        80% on our test dataset. This can, and should, certainly be
+        80% on the test dataset. This can, and should, certainly be
         improved, and the resulting visualisation is NOT perfectly accurate with regards to the classified stance. View
         it as correctly showing the rough trend for now.</p>
     <h3 id="aggregation">Aggregation</h3>
     <p>The map shows ~400,000 tweets, binned into the states of a country (some tweets were removed because there was
         only information about the country of origin), aggregated per day. All bubbles are scaled by the square root of
-        the 99.9%-th quantile to make
-        the visualisation useful for countries where there aren't many tweets. Favor/against
-        scaling is preserved through the square root.</p>
+        the 99.9%-th quantile (because of outliers) value to make
+        visible locations where only few tweets are posted, comparatively. The proportion of Favor/Against tweets is
+        preserved through the square root by plotting the smaller bubble proportional to the larger one (on which the
+        square root is applied).</p>
     <h2 id="drawbacks">Drawbacks</h2>
     <p>This visualisation should be viewed as an interesting exploration of stance on climate change. The numbers are
         not perfectly accurate, as the language models to correctly classify tweets are not flawless. The locations are
@@ -87,7 +89,7 @@
 <div id="container">
     <div id="play"></div>
     <div id="date">
-        <p>Animate daily stance on #climatechange</p>
+        <p>Click to play/pause animation</p>
     </div>
     <div id="map-container"></div>
     <div id="chart-container"></div>
