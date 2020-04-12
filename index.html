@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8"/>
     <title>Mapping Climate Change Stance</title>
     <script src="lib/d3.min.js"></script>
@@ -50,12 +50,16 @@
     <h3 id="stance">Stance</h3>
     <p>We trained a stance classification model on a dataset of approx. 50,000 tweets labelled with their stance on
         man-made climate change (<a href="http://alt.qcri.org/semeval2016/task6/index.php?id=data-and-tools">link</a>).
-        Our RNN model achieves an accuracy of about 80% on our test dataset. This can, and should, certainly be
+        Our RNN model (<a href="https://docs.fast.ai/text.models.html#AWD_LSTM">link</a>) achieves an accuracy of about
+        80% on our test dataset. This can, and should, certainly be
         improved, and the resulting visualisation is NOT perfectly accurate with regards to the classified stance. View
         it as correctly showing the rough trend for now.</p>
     <h3 id="aggregation">Aggregation</h3>
     <p>The map shows ~400,000 tweets, binned into the states of a country (some tweets were removed because there was
-        only information about the country of origin), aggregated per day.</p>
+        only information about the country of origin), aggregated per day. All bubbles are scaled by the square root of
+        the 99.9%-th quantile to make
+        the visualisation useful for countries where there aren't many tweets. Favor/against
+        scaling is preserved through the square root.</p>
     <h2 id="how-to-use">How to use</h2>
     <p>The map shows the world, with bubbles representing the number of tweets about climate change on the given date
         (blue: favor, red: against), at the given location. The line chart below shows the global number of tweets for
