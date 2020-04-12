@@ -60,6 +60,14 @@
         the 99.9%-th quantile to make
         the visualisation useful for countries where there aren't many tweets. Favor/against
         scaling is preserved through the square root.</p>
+    <h2 id="drawbacks">Drawbacks</h2>
+    <p>This visualisation should be viewed as an interesting exploration of stance on climate change. The numbers are
+        not perfectly accurate, as the language models to correctly classify tweets are not flawless. The locations are
+        not necessarily accurate either, as most tweets were not geotagged - the location is solely based on the users
+        profile. The choice of representation (blue and red bubbles) is not ideal - for example, if there are almost as
+        many 'against' tweets as there are 'favor' tweets, the bubble will appear almost completely red. A better choice
+        are pie-charts, where area accurately represents percentage. We prototyped that visualisation, but making an
+        interactive visualisation with this many datapoints was proving too difficult at this point.</p>
     <h2 id="how-to-use">How to use</h2>
     <p>The map shows the world, with bubbles representing the number of tweets about climate change on the given date
         (blue: favor, red: against), at the given location. The line chart below shows the global number of tweets for
@@ -74,14 +82,7 @@
         </li>
         <li><strong><em>Zoom</em></strong> to reveal local changes - scroll into the map and drag it around!</li>
     </ul>
-    <h2 id="drawbacks">Drawbacks</h2>
-    <p>This visualisation should be viewed as an interesting exploration of stance on climate change. The numbers are
-        not perfectly accurate, as the language models to correctly classify tweets are not flawless. The locations are
-        not necessarily accurate either, as most tweets were not geotagged - the location is solely based on the users
-        profile. The choice of representation (blue and red bubbles) is not ideal - for example, if there are almost as
-        many 'against' tweets as there are 'favor' tweets, the bubble will appear almost completely red. A better choice
-        are pie-charts, where area accurately represents percentage. We prototyped that visualisation, but making an
-        interactive visualisation with this many datapoints was proving too difficult at this point.</p>
+
 </div>
 <div id="container">
     <div id="play"></div>

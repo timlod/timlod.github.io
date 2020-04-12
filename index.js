@@ -1,15 +1,15 @@
 'use strict';
+/*
+D3.js code for DataVis2020 Assignment 2.
+Uses adapted snippets from https://kartoteket.as/features/corona/timeline-map/ (line chart),
+https://www.axismaps.com/blog/2014/10/geography-of-jobs-animated-mapping-with-d3/ (slider and animation) and
+https://vizhub.com/curran/8704c9b7c6df43cabf839aa3f1cb7b70?edit=files&file=bundle.js (data loading and legend)
+
+Copyright Tim Loderhose (tim@loderhose.com), 2020
+ */
 const loadAndProcessData = () =>
     Promise
         .all([
-            // d3.json('https://rawcdn.githack.com/timlod/timlod.github.io/3566e9ea38d34ab4d81dee8faa4acb262dac3667/data/countries-50m.json'),
-            // d3.json('https://rawcdn.githack.com/timlod/timlod.github.io/3566e9ea38d34ab4d81dee8faa4acb262dac3667/data/data.json'),
-            // d3.json('https://rawcdn.githack.com/timlod/timlod.github.io/3566e9ea38d34ab4d81dee8faa4acb262dac3667/data/hashtags.json'),
-            // d3.json('https://rawcdn.githack.com/timlod/timlod.github.io/3566e9ea38d34ab4d81dee8faa4acb262dac3667/data/timeline2.json')
-            // d3.json('data/countries-50m.json'),
-            // d3.json('data/data.json'),
-            // d3.json('data/hashtags.json'),
-            // d3.json('data/timeline2.json')
             d3.json('https://timlod.github.io/data/50m.json'),
             d3.json('https://timlod.github.io/data/data.json'),
             d3.json('https://timlod.github.io/data/hashtags.json'),
@@ -80,12 +80,9 @@ var svg = d3.select("#map-container").append("svg")
 
 const projection = d3.geoNaturalEarth1();
 const pathGenerator = d3.geoPath().projection(projection);
-const radiusValue = d => d.reduce((a, b) => a + b, 0);
-//const radiusValue = d => d3.max(d)
 
 // Some constants
 var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-    months_full = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
     orderedColumns = [],
     currentFrame = 0,
     interval,
@@ -118,13 +115,9 @@ svg.call(
     })
 );
 
-
 var sizeScale;
 var twitter;
 var circles;
-// I believe that countries gets the return values of loadAnd... as its fields (features and
-// featuresWithPopulation, however, the former should be redundant as the latter is the same,
-// but with the 2018 field parsed. try tomorrow
 loadAndProcessData().then(([features, tw]) => {
 
     twitter = tw
@@ -138,18 +131,15 @@ loadAndProcessData().then(([features, tw]) => {
     map.append('g')
         .selectAll('path')
         .data(features)
-        // changed enter(..).append('path') to join as enter would remove the first country
-        // (zimbabwe) due to the outer path (map boundary already being defined at index 0)
         .join('path')
         .attr('class', 'country')
         .attr('d', pathGenerator)
         .attr('fill', d => '#e8e8e8');
 
-    // puts centroid x,y coordinates into geo(topo)json object properties
     twitter.locations.forEach(d => {
         d.projected = projection(d.slice(0, 2));
     });
-    // puts circles according to centroid location and radiusvalue
+
     circles = map.selectAll('circle')
         .data(twitter.locations)
         .join("g")
@@ -208,7 +198,7 @@ loadAndProcessData().then(([features, tw]) => {
     if (isPlaying) {
         d3.select("#play").classed("pause", true).attr("title", "Pause animation");
     }
-    drawMonth(currentFrame); // initial map
+    draw(currentFrame); // initial map
 
     changeChart();
     animate()
@@ -225,19 +215,19 @@ function animate() {
             .style("left", 100 * currentFrame / orderedColumns.length + "%");
         slider.value(currentFrame);
 
-        drawMonth(currentFrame, true);
+        draw(currentFrame, true);
 
         if (currentFrame == orderedColumns.length - 1) {
             //isPlaying = false;
             //d3.select("#play").classed("pause", false).attr("title", "Play animation");
             //clearInterval(interval);
-	    currentFrame = 0;
+            currentFrame = 0;
         }
 
     }, frameLength);
 }
 
-function drawMonth(m, tween) {
+function draw(m, tween) {
     if (typeof tooltipPos === "function") tooltipPos();
     circles
         .data((d, i) => twitter.data[m][i])
@@ -322,7 +312,7 @@ function createSlider() {
                 clearInterval(interval);
             }
             currentFrame = value;
-            drawMonth(value, d3.event.type != "drag");
+            draw(value, d3.event.type != "drag");
         })
         .on("slideend", function () {
             if (isPlaying) animate();
@@ -450,7 +440,7 @@ var changeChart = function () {
     const t = chart.transition().duration(frameLength);
 // initalize on first call
     if (!chart.g) {
-	// change comments to fix chart
+        // change comments to fix chart
         // chart.g = d3
         //     .selectAll('.map')
         chart.g = svg.append("g")
@@ -494,14 +484,14 @@ var changeChart = function () {
         .defined(d => !isNaN(d.value[0]))
         .x(d => x(d.date))
         .y(d => yScale(d.value[0]))
-        //.curve(d3.curveBasis);
+    //.curve(d3.curveBasis);
 
     var lowLine = d3
         .line()
         .defined(d => !isNaN(d.value[1]))
         .x(d => x(d.date))
         .y(d => yScale(d.value[1]))
-        //.curve(d3.curveBasis);
+    //.curve(d3.curveBasis);
 
     chart.lines.selectAll('path').remove();
     var totalColor = "#3d9bd2"
