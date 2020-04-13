@@ -32,7 +32,6 @@ const loadAndProcessData = () =>
             twitter.series[0].values.forEach(d => d.totalvalue = d.value[0] + d.value[1])
             return [countries.features, twitter];
         });
-
 const sizeLegend = (selection, props) => {
     const {
         sizeScale,
@@ -90,15 +89,10 @@ var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oc
     isPlaying = true;
 
 var dateScale, sliderScale, slider;
-// should be equal to x_offset of linechart
 var sliderMargin = 100;
 var probe,
     hoverData;
 var tooltipPos
-// Put this onto svg and not g to have the world boundary under the countries
-// g now only includes countries (see also path selection below)
-// This causes the zoom to not move the boundary - wrong!
-// Instead put the boundary under g - top level, and add the countries in a sub-element g
 const map = svg.append('g')
     .attr("class", "map");
 map.append('path')
@@ -107,13 +101,13 @@ map.append('path')
 
 probe = d3.select("#map-container").append("div")
     .attr("id", "probe");
-//const colorLegendG = svg.append('g').attr('transform', `translate(40,310)`);
 
 svg.call(
     d3.zoom().on('zoom', () => {
         map.attr('transform', d3.event.transform);
     })
 );
+
 
 var sizeScale;
 var twitter;
@@ -123,7 +117,6 @@ loadAndProcessData().then(([features, tw]) => {
     twitter = tw
     orderedColumns = twitter.ts
 
-    // Flatten values array, sort by rv
     sizeScale = d3.scaleSqrt()
         .domain([0, d3.quantile(twitter.data.flat().map(d => d3.max(d)).sort(d3.ascending), 0.9995)])
         .range([0, 15]);
@@ -209,19 +202,16 @@ function animate() {
     interval = setInterval(function () {
         currentFrame++;
 
-        if (currentFrame == orderedColumns.length) currentFrame = 0;
+        if (currentFrame === orderedColumns.length) currentFrame = 0;
 
         d3.select("#slider-div .d3-slider-handle")
-            .style("left", 100 * currentFrame / orderedColumns.length + "%");
+            .style("left", 100 * currentFrame / (orderedColumns.length - 1) + "%");
         slider.value(currentFrame);
 
         draw(currentFrame, true);
 
-        if (currentFrame == orderedColumns.length - 1) {
-            //isPlaying = false;
-            //d3.select("#play").classed("pause", false).attr("title", "Play animation");
-            //clearInterval(interval);
-            currentFrame = 0;
+        if (currentFrame === orderedColumns.length) {
+            currentFrame = -1;
         }
 
     }, frameLength);
@@ -250,7 +240,6 @@ function draw(m, tween) {
                     var other = twitter.data[m][j][0]
                     return other ? sizeScale(other) * d / other : 0;
                 }
-                //return sizeScale(radiusValue(twitter.data[m][j]) - d)
 
             });
     } else {
@@ -263,7 +252,6 @@ function draw(m, tween) {
                 var other = twitter.data[m][j][0]
                 return other ? sizeScale(other) * d / other : 0;
             }
-            //return sizeScale(radiusValue(twitter.data[m][j]) - d)
         });
     }
 }
@@ -276,7 +264,6 @@ function setProbeContent(loc, d) {
         hs = d.hashtags,
         country = loc[3],
         place = loc[2];
-    // Change into location name along with numbers and hashtags
     var html = "<strong>" + place + ", " + country + "</strong><br/>" +
         format(d[0]) + " favor " + format(d[1]) + " against" + "<br/>" +
         "<span>Top hashtags: " + Object.keys(hs).slice(0, 5).join(", ") + "</span>"
@@ -328,8 +315,7 @@ function createSlider() {
     d3.select("#slider-container")
         .append("div")
         .attr("id", "slider-div")
-        // should be equal to width - x_offset (margin?) from chart
-        .style("width", "760px")//dateScale.range()[1] + "px")
+        .style("width", dateScale.range()[1] + "px")
         .on("mousemove", sliderProbe)
         .on("mouseout", function () {
             d3.select("#slider-probe").style("display", "none");
@@ -344,11 +330,10 @@ function createSlider() {
         .scale(dateScale)
         .tickValues(dateScale.ticks(orderedColumns.length).filter(function (d, i) {
             // ticks only for beginning of each year, plus first and last
-            return i == 0 || (i % 2) == 0 | i == orderedColumns.length - 1;
+            return i === 0 || (i % 2) === 0 || i === orderedColumns.length - 1;
         }))
         .tickFormat(function (d) {
-            // abbreviated year for most, full month/year for the ends
-            if (d.getDate() == 0) return "'sdfg" + d.getMonth().toString().substr(2);
+            if (d.getDate() === 0) return "'" + d.getMonth().toString().substr(2);
             return d.getDate() + " " + months[d.getMonth()];
         })
         .tickSize(10)
@@ -358,10 +343,10 @@ function createSlider() {
     d3.select("#slider-container")
         .append("svg")
         .attr("id", "axis")
-        .attr("width", dateScale.range()[1] + sliderMargin * 3)
+        .attr("width", width)
         .attr("height", 25)
         .append("g")
-        .attr("transform", "translate(" + (sliderMargin + 1) + ",0)")
+        .attr("transform", "translate(" + (sliderMargin) + ",0)")
         .call(sliderAxis);
 
     d3.select("#axis > g g:first-child text").attr("text-anchor", "end").style("text-anchor", "end");
@@ -370,36 +355,29 @@ function createSlider() {
 
 var changeChart = function () {
 
-    var chartWidth = width;
-    var x_offset = sliderMargin
-    var y_offset = 70
-    var y_axisheight = 250
-    //var margin = ({top: 20, right: 130, bottom: 50, left: 120});
+    var x_offset = sliderMargin;
+    var chartWidth = width - 2 * sliderMargin;
+    var y_offset = -70
+    var y_axisheight = 160
     var margin = ({top: 0, right: 0, bottom: 0, left: 0});
     var y = function () {
         return d3
             .scaleBand()
             .domain(twitter.ts.map(d => d.toDateString()) /*.sort(d3.descending)*/)
-            .range([height - 200, margin.top])
+            .range([height, margin.top])
             .paddingInner(1)
             .paddingOuter(1)
             .align(0.1)
             .round(true);
     }();
     // defines width of chart x axis
-    var chartX = chartWidth < 750 ? (chartWidth < 400 ? 0 : 50) : x_offset;//chartWidth / 11;
-    var x = function () {
-        return d3
-            .scaleTime()
-            .domain(d3.extent(twitter.ts))
-            // offset for the chart to sit nicely with y axis
-            .range([chartX, chartWidth - x_offset]);
-    }();
+    var chartX = 0;
+    var x = dateScale;
     var xAxis = svg => {
         const r = x.range();
         const w = r[1] - r[0];
         // moves x axis around (vertically
-        svg.attr('transform', `translate(0,${height - y_offset})`).call(
+        svg.attr('transform', `translate(0,${height})`).call(
             d3
                 .axisBottom(x)
                 .tickFormat(d3.timeFormat("")));
@@ -407,44 +385,31 @@ var changeChart = function () {
     };
     var yAxis = (svg, y) =>
         // moves y axis further around
-        svg.attr('transform', `translate(${chartWidth - x_offset},0)`).call(
+        svg.attr('transform', `translate(${chartWidth},0)`).call(
             d3
                 .axisRight(y)
                 .tickSizeOuter(0)
                 .tickSizeInner((5) * -1)
         );
     //SCALES
-    var size = s => {
-        return !s ? s : sizeLinear(s);
-    };
-    var sizeLinear = d3
-        .scaleSqrt()
-        .domain(d3.extent(twitter.timeline, d => d.totalvalue))//[0] + d.value[1]))
-        .range([1, chartWidth / 10]);
-    var opacity = d3
-        .scaleLinear()
-        .domain([d3.max(twitter.timeline, d => d.totalvalue), 1])//[0] + d.value[1]), 1])
-        .range([.10, .65]);
     var yScale = function () {
         return d3
             .scaleLinear()
             .domain([
-                //d3.min(twitter.timeline, s => d3.min(s.values, v => v.value)),
-                0, d3.max(twitter.timeline, s => s.totalvalue)//d3.max([s.value[0], s.value[1]]))
+                0, d3.max(twitter.timeline, s => d3.max([s.value[0], s.value[1]]))
             ])
             // Defines y range (height on chart)
-            .range([height - y_offset, height - y_axisheight]);
+            .range([height, height - y_axisheight]);
     }();
 
     const chart = d3.select("chart-container").remove();
     const t = chart.transition().duration(frameLength);
-// initalize on first call
+
+    // initalize on first call
     if (!chart.g) {
-        // change comments to fix chart
-        // chart.g = d3
-        //     .selectAll('.map')
         chart.g = svg.append("g")
-            .attr('class', 'chart');
+            .attr('class', 'chart')
+            .attr("transform", `translate(${x_offset},${y_offset})`);
 
         chart.lines = chart.g.append('g').classed('lines', true);
         chart.xAxis = chart.g
@@ -455,8 +420,8 @@ var changeChart = function () {
         chart.legend = chart.g
             .append("g")
             .classed("legend", true)
-            // Moves legend up and down, kinda messed up value-wise now
-            .attr('transform', `translate(${chartX}, ${height - 55})`);
+            // Moves legend up and down
+            .attr('transform', `translate(${chartX}, ${height + 5})`);
         chart.tooltip = chart.g.append('g').classed('tooltip', true);
 
         // add X axis
@@ -467,17 +432,17 @@ var changeChart = function () {
 
     // the guide that should scroll with time
     const tooltip = chart.tooltip.append('g').attr('class', 'guide');
-    var tooltip_height = y_axisheight
 
     tooltip
         .append('line')
         .attr('stroke', '#ddd')
         .style('stroke-opacity', 0.25)
         .attr('stroke-width', 10)
-        .attr('x1', chartX + 3)
-        .attr('x2', chartX + 3)
-        .attr('y1', height - tooltip_height)
-        .attr('y2', height - y_offset);
+        .attr('x1', chartX)
+        .attr('x2', chartX)
+        .attr('y1', height - y_axisheight)
+        .attr('y2', height);
+
 
     var totalLine = d3
         .line()
@@ -565,8 +530,8 @@ var changeChart = function () {
     tooltipPos = function () {
         const r = x.range();
         const w = r[1] - r[0];
-        const numDates = twitter.ts.length;
+        const numDates = twitter.ts.length - 1;
         const tickLength = w / numDates;
-        guide.attr('transform', `translate(${(r[0] + tickLength * currentFrame) - chartX},0)`);
+        guide.attr('transform', `translate(${(r[0] + tickLength * currentFrame) - chartX - 2},0)`);
     }
 };

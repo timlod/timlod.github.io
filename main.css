@@ -85,7 +85,7 @@ circle.c1 {
     width: 53px;
     height: 53px;
     background-image: url(res/play.png);
-    border-radius: 5px;
+    border-radius: 1px;
     margin-left: 10px;
     cursor: pointer;
 }
