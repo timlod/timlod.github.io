@@ -40,6 +40,9 @@
     <p>Of course there are more elaborate classifications, but for the sake of this visualisation, we the goal was to
         visualise the question:</p>
     <p><em>How many tweets on Twitter deny man-made climate change?</em></p>
+    <p>Perhaps surprisingly, we find that there are comparatively few! You will also see how the Coronavirus pandemic
+    influenced the global debate on climate change, as well as some places (like Alberta, Canada) that has more people
+    voicing the 'Against' stance. Use the graphic below to find out for yourself!</p>
     <h2 id="data">Data</h2>
     <p>We collected all the tweets containing the words 'climate' and 'change' from the
         <a href="https://developer.twitter.com/en/docs/tutorials/consuming-streaming-data">Twitter Streaming API</a>
@@ -64,12 +67,12 @@
         square root is applied).</p>
     <h2 id="drawbacks">Drawbacks</h2>
     <p>This visualisation should be viewed as an interesting exploration of stance on climate change. The numbers are
-        not perfectly accurate, as the language models to correctly classify tweets are not flawless. The locations are
-        not necessarily accurate either, as most tweets were not geotagged - the location is solely based on the users
-        profile. The choice of representation (blue and red bubbles) is not ideal - for example, if there are almost as
+        not perfectly accurate, as the language models to correctly classify tweets are not flawless. Most locations are
+        inferred, so the location may reflect the twitter users' general location rather than where the tweet was posted.
+        The choice of representation (blue and red bubbles) is not ideal - for example, if there are almost as
         many 'against' tweets as there are 'favor' tweets, the bubble will appear almost completely red. A better choice
-        are pie-charts, where area accurately represents percentage. We prototyped that visualisation, but making an
-        interactive visualisation with this many datapoints was proving too difficult at this point.</p>
+        are pie-charts, where area accurately represents percentage. We prototyped that visualisation, but found that
+        interactively plotting this many piecharts did not lead to a usable graphic.</p>
     <h2 id="how-to-use">How to use</h2>
     <p>The map shows the world, with bubbles representing the number of tweets about climate change on the given date
         (blue: favor, red: against), at the given location. The line chart below shows the global number of tweets for
@@ -104,10 +107,10 @@
 </div>
 <div class="markdown-body">
     <h2 id="how-it-was-made">How it was made</h2>
-    <p>This map was created using <a href="https://d3js.org">D3.js</a>. We updated the <a
-            href="https://github.com/MasterMaps/d3-slider">d3-slider</a> from <a
-            href="https://www.axismaps.com/blog/2014/10/geography-of-jobs-animated-mapping-with-d3/">Axis Maps</a> to D3
-        version 5, and adapted parts of the line-chart from <a
+    <p>This map was created using <a href="https://d3js.org">D3.js</a>. We adapted the <a
+            href="https://github.com/MasterMaps/d3-slider">d3-slider</a> and hover functionality from <a
+            href="https://www.axismaps.com/blog/2014/10/geography-of-jobs-animated-mapping-with-d3/">Axis Maps</a> and
+        to updated them to D3 version 5, and adapted parts of the line-chart from <a
                 href="https://kartoteket.as/features/corona/timeline-map/">Kartoteket's</a> Coronavirus map.</p>
 
 </div>

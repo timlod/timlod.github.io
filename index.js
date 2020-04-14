@@ -7,7 +7,7 @@ https://vizhub.com/curran/8704c9b7c6df43cabf839aa3f1cb7b70?edit=files&file=bundl
 
 Copyright Tim Loderhose (tim@loderhose.com), 2020
  */
-const loadAndProcessData = () =>
+const loadData = () =>
     Promise
         .all([
             d3.json('https://timlod.github.io/data/50m.json'),
@@ -70,6 +70,8 @@ const sizeLegend = (selection, props) => {
 
 };
 
+var twitter;
+
 var width = 960;
 var height = 650;
 
@@ -88,11 +90,10 @@ var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oc
     frameLength = 1000,
     isPlaying = true;
 
-var dateScale, sliderScale, slider;
+var dateScale, sliderScale, sizeScale, slider, hoverData;
 var sliderMargin = 100;
-var probe,
-    hoverData;
-var tooltipPos
+var circles, probe, tooltipPos;
+
 const map = svg.append('g')
     .attr("class", "map");
 map.append('path')
@@ -108,11 +109,7 @@ svg.call(
     })
 );
 
-
-var sizeScale;
-var twitter;
-var circles;
-loadAndProcessData().then(([features, tw]) => {
+loadData().then(([features, tw]) => {
 
     twitter = tw
     orderedColumns = twitter.ts
@@ -485,7 +482,7 @@ var changeChart = function () {
         .attr("stroke", lowColor)
         .attr("d", d => lowLine(d.values));
 
-// legend
+    // legend
     chart.legend
         .append('line')
         .attr('stroke', totalColor)
